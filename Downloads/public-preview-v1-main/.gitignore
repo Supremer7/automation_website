@@ -1,0 +1,20 @@
+# Build artifacts
+node_modules/
+.next/
+build/
+dist/
+
+# Credentials and secrets
+lib/core/auth/creds-file.json
+*.json.secret
+*-credentials.json
+service-account*.json
+*.pem
+lib/features/auth/credentials/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

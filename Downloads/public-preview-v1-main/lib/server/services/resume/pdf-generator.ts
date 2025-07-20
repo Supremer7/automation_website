@@ -2279,7 +2279,7 @@ export class PDFGenerator {
       align: 'center'
     });
 
-    this.yPosition += 6;
+    this.yPosition += 2;
 
     // Contact info (centered)
     const contactItems = [];
@@ -2372,14 +2372,14 @@ export class PDFGenerator {
         bullets.forEach((bullet, bulletIndex) => {
           this.checkPageOverflow(30);
 
-          // Add bullet point
-          this.addText('•', this.config.margins.left + bulletIndent, this.yPosition, {
+          // Add bullet point - positioned at margin (like preview where bullet is at -0.75rem from list)
+          this.addText('•', this.config.margins.left, this.yPosition, {
             font: this.config.fonts.body,
             color: this.config.colors.text
           });
 
-          // Add bullet text with proper indentation (reduced to match preview)
-          this.yPosition = this.addText(bullet, this.config.margins.left + bulletIndent + 8, this.yPosition, {
+          // Add bullet text - starts at bulletIndent from margin (matches preview)
+          this.yPosition = this.addText(bullet, this.config.margins.left + bulletIndent, this.yPosition, {
             font: this.config.fonts.body,
             color: this.config.colors.text,
             maxWidth: this.contentWidth - bulletIndent - 8
@@ -2419,13 +2419,28 @@ export class PDFGenerator {
         });
       }
 
+      // Parse institution name to extract location if present (to match preview logic)
+      let institutionName = edu.institution || edu.school || '';
+      let location = edu.location;
+      
+      // Check if institution contains comma (indicating embedded location)
+      if (institutionName.includes(',') && !location) {
+        const parts = institutionName.split(',');
+        institutionName = parts[0].trim();
+        location = parts.slice(1).join(',').trim();
+      } else if (institutionName.includes(',')) {
+        // Even if location exists, extract just the institution name
+        const parts = institutionName.split(',');
+        institutionName = parts[0].trim();
+      }
+
       // School info line (institution • location • date)
       const schoolInfoParts = [];
-      if (edu.institution || edu.school) {
-        schoolInfoParts.push(edu.institution || edu.school);
+      if (institutionName) {
+        schoolInfoParts.push(institutionName);
       }
-      if (edu.location) {
-        schoolInfoParts.push(edu.location);
+      if (location) {
+        schoolInfoParts.push(location);
       }
       if (edu.date || edu.endDate || edu.graduationDate) {
         const dateString = edu.date || edu.endDate || edu.graduationDate;
@@ -2602,14 +2617,14 @@ export class PDFGenerator {
         bullets.forEach((bullet, bulletIndex) => {
           this.checkPageOverflow(30);
 
-          // Add bullet point
-          this.addText('•', this.config.margins.left + bulletIndent, this.yPosition, {
+          // Add bullet point - positioned at margin (like preview where bullet is at -0.75rem from list)
+          this.addText('•', this.config.margins.left, this.yPosition, {
             font: this.config.fonts.body,
             color: this.config.colors.text
           });
 
-          // Add bullet text with proper indentation (reduced to match preview)
-          this.yPosition = this.addText(bullet, this.config.margins.left + bulletIndent + 8, this.yPosition, {
+          // Add bullet text - starts at bulletIndent from margin (matches preview)
+          this.yPosition = this.addText(bullet, this.config.margins.left + bulletIndent, this.yPosition, {
             font: this.config.fonts.body,
             color: this.config.colors.text,
             maxWidth: this.contentWidth - bulletIndent - 8
